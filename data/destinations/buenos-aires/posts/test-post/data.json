@@ -1,0 +1,22 @@
+{
+    "title": "Test post",
+    "previewTitle": "Long test post preview title",
+    "previewImage": "assets/img/bariloche.jpg",
+    "largeImage": "assets/img/bariloche.jpg",
+    "uploadTime": "2020-02-19T14:00:00.000Z",
+    "gallery": [],
+    "paragraphs": [
+        {
+            "text": "hello world"
+        },
+        {
+            "media": {
+                "type": "image",
+                "source": "assets/img/iguazu.jpg"
+            }
+        },
+        {
+            "text": "more text"
+        }
+    ]
+}
