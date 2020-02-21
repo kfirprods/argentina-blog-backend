@@ -5,11 +5,17 @@ const util = require('util');
 
 const readFile = util.promisify(fs.readFile);
 const readDir = util.promisify(fs.readdir);
+const exists = util.promisify(fs.exists);
 
 let parameters = new Array();
 
 async function getPostsForDestination(destinationName) {
-  const destinationPostNames = await readDir(`data/destinations/${destinationName}/posts`);
+  const postsFolderPath = `data/destinations/${destinationName}/posts`;
+  if (!(await exists(postsFolderPath))) {
+    return Promise.resolve([]);
+  }
+
+  const destinationPostNames = await readDir(postsFolderPath);
 
   return destinationPostNames.map(async postName => {
     const rawPostJson = await readFile(`data/destinations/${destinationName}/posts/${postName}/data.json`);
@@ -64,7 +70,7 @@ function getPathFromGenericParams(requestParams) {
     requestParams.dir4,
     requestParams.dir5
   );
-
+  
   let desiredPath = "";
 
   for (let providedParam of providedParams) {
