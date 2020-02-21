@@ -21,6 +21,19 @@ async function getPostsForDestination(destinationName) {
     const rawPostJson = await readFile(`data/destinations/${destinationName}/posts/${postName}/data.json`);
     const post = JSON.parse(rawPostJson);
     post.id = postName;
+
+    post.photosCount = post.paragraphs.map(paragraph => {
+      if (paragraph.media === undefined) {
+        return 0;
+      }
+      if (post.gallery.includes(paragraph.media.source)) {
+        return 0;
+      }
+
+      return 1;
+    }).reduce((a, b) => a + b, 0) + post.gallery.length;
+
+    post.paragraphs = [];
     return post;
   });
 }
@@ -35,7 +48,7 @@ router.get('/argentina/destinations', async (req, res, next) => {
     const posts = await Promise.all(await getPostsForDestination(destinationName));
     destination.id = destinationName;
     destination.postsCount = posts.length;
-    destination.photosCount = posts.map(post => post.gallery.length).reduce((a,b) => a+b, 0);
+    destination.photosCount = posts.map(post => post.photosCount).reduce((a, b) => a + b, 0);
     destinations.push(destination);
   }
 
@@ -70,7 +83,7 @@ function getPathFromGenericParams(requestParams) {
     requestParams.dir4,
     requestParams.dir5
   );
-  
+
   let desiredPath = "";
 
   for (let providedParam of providedParams) {
