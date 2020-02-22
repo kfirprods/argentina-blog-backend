@@ -4,7 +4,10 @@
     "previewImage": "https://i.imgur.com/sJhpRJ8.jpg",
     "largeImage": "https://i.imgur.com/HcheKnl.jpg",
     "uploadTime": "2020-02-21T21:00:00.000Z",
-    "gallery": [],
+    "gallery": [
+        "https://i.imgur.com/cTMaaSa.jpg",
+        "https://i.imgur.com/7Pk5Nh0.jpg"
+    ],
     "paragraphs": [
         {
             "text": "קמתי בטעות מוקדם, אז החלטתי לנצל את ההזדמנות ולהגיע לתאטרון קולון לפני 10 בבוקר כדי לקבל הנחה של 200 פסוס."
@@ -20,19 +23,6 @@
         },
         {
             "text": "בדיוק כשהתחלתי להשתעמם מכל התרבות הזו (בכל זאת, אני שייך לדור הY) המדריכה הודיעה שהסיור נגמר ועשיתי את דרכי ברגל לנמל המפורסם."
-        },
-        {
-            "media": {
-                "type": "image",
-                "source": "https://i.imgur.com/cTMaaSa.jpg",
-                "description": "גשר הנשים"
-            }
-        },
-        {
-            "media": {
-                "type": "image",
-                "source": "https://i.imgur.com/7Pk5Nh0.jpg"
-            }
         }
     ]
 }
