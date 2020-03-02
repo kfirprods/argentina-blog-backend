@@ -9,7 +9,7 @@ const exists = util.promisify(fs.exists);
 
 let parameters = new Array();
 
-async function getPostsForDestination(destinationName) {
+async function getPostsForDestination(destinationName, onlyPreview = true) {
   const postsFolderPath = `data/destinations/${destinationName}/posts`;
   if (!(await exists(postsFolderPath))) {
     return Promise.resolve([]);
@@ -33,16 +33,66 @@ async function getPostsForDestination(destinationName) {
       return 1;
     }).reduce((a, b) => a + b, 0) + post.gallery.length;
 
-    post.paragraphs = [];
+    if (onlyPreview || post.paragraphs == undefined) {
+      post.paragraphs = [];
+    }
+
     return post;
   });
 }
 
+async function getDestinationNames() {
+  return await readDir('data/destinations');
+}
+
+router.get('/argentina/gallery', async (req, res, next) => {
+  const albums = new Array();
+
+  for (let destinationName of await getDestinationNames()) {
+    for (let post of await Promise.all(await getPostsForDestination(destinationName, false))) {
+      const postPhotos = new Array();
+
+      // Add title photo
+      postPhotos.push(post.largeImage);
+
+      // Add photos from paragraphs
+      for (let paragraph of post.paragraphs) {
+        if (paragraph.media) {
+          postPhotos.push(paragraph.media.source);
+        }
+      }
+
+      // Add photos from post gallery
+      for (let galleryPhoto of post.gallery) {
+        postPhotos.push(galleryPhoto);
+      }
+
+      albums.push({
+        title: post.previewTitle,
+        // TODO: Always have a small sized version of the largeImage
+        leadingPhoto: post.largeImage,
+        innerPhotos: postPhotos,
+        destination: destinationName,
+        timestamp: post.uploadTime
+      });
+    }
+  }
+
+  albums.sort((album1, album2) => {
+    if (album1.timestamp < album2.timestamp) {
+      return -1;
+    } else {
+      return 1;
+    }
+  });
+
+  res.json(albums);
+});
+
 router.get('/argentina/destinations', async (req, res, next) => {
-  const destinationNames = await readDir('data/destinations');
   const destinations = new Array();
 
-  for (let destinationName of destinationNames) {
+  for (let destinationName of await getDestinationNames()) {
     const rawDestinationJson = await readFile(`data/destinations/${destinationName}/data.json`);
     const destination = JSON.parse(rawDestinationJson);
     const posts = await Promise.all(await getPostsForDestination(destinationName));
@@ -58,6 +108,16 @@ router.get('/argentina/destinations', async (req, res, next) => {
 router.get('/argentina/destinations/:destinationId/posts', async (req, res, next) => {
   const posts = await Promise.all(await getPostsForDestination(req.params.destinationId));
   res.json(posts);
+});
+
+router.post('/argentina/login', async (req, res, next) => {
+  console.log(req.body);
+  if (req.body.password === "blog1738") {
+    res.json({ isSuccessful: true });
+  } else {
+    console.log(`Bad login attempt with password ${req.body.password}`);
+    res.json({ isSuccessful: false });
+  }
 });
 
 for (let depth of new Array("dir1", "dir2", "dir3", "dir4", "dir5")) {
